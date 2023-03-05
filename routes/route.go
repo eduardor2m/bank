@@ -17,5 +17,20 @@ func SetupRouter() *gin.Engine {
 		accounts.DELETE("/:id", controllers.DeleteAccount)
 	}
 
+	clients := r.Group("/clients")
+	{
+		clients.POST("/", controllers.CreateClient)
+		clients.GET("/", controllers.ListClients)
+		clients.GET("/:id", controllers.GetClient)
+		clients.PUT("/:id", controllers.UpdateClient)
+		clients.DELETE("/:id", controllers.DeleteClient)
+	}
+
+	transactions := r.Group("/transactions")
+	{
+		transactions.POST("/:idOrigin/:idDestination", controllers.CreateTransaction)
+		transactions.GET("/", controllers.ListTransactions)
+	}
+
 	return r
 }
