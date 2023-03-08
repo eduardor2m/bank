@@ -7,8 +7,8 @@ import (
 
 type Transaction struct {
 	gorm.Model
-	AccountOriginID      int     `gorm:"type:int" validate:"nonzero"`
-	AccountDestinationId int     `gorm:"type:int" validate:"nonzero"`
+	AccountOriginID      int     `gorm:"type:int"`
+	AccountDestinationId int     `gorm:"type:int"`
 	Value                float64 `gorm:"type:float" validate:"nonzero"`
 }
 

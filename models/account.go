@@ -10,6 +10,8 @@ type Account struct {
 	AccountNumber string  `gorm:"type:varchar(100);unique_index" validate:"nonzero"`
 	AgencyNumber  string  `gorm:"type:varchar(100)" validate:"nonzero"`
 	Balance       float64 `gorm:"type:float" validate:"nonzero"`
+	ClientId      uint    `gorm:"type:int"`
+	Client        Client
 }
 
 func (a *Account) Validate() error {

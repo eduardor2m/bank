@@ -35,5 +35,6 @@ require (
 	gopkg.in/validator.v2 v2.0.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/driver/postgres v1.4.8 // indirect
+	gorm.io/driver/sqlite v1.4.4 // indirect
 	gorm.io/gorm v1.24.6 // indirect
 )

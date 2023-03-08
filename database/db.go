@@ -1,32 +1,22 @@
 package database
 
 import (
-	"database/sql"
-
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/eduardor2m/bank/models"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
-var DB *sql.DB
+var DB *gorm.DB
 
 func InitDB() {
 	var err error
-	DB, err = sql.Open("sqlite3", "./bank.db")
+	DB, err = gorm.Open(sqlite.Open("bank.db"), &gorm.Config{})
 	if err != nil {
-		panic(err)
-	}
-	if err = DB.Ping(); err != nil {
-		panic(err)
+		panic("failed to connect database")
 	}
 
-	sqlStmt := `
-	 CREATE TABLE IF NOT EXISTS accounts (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, balance INTEGER, agency VARCHAR(255), account VARCHAR(255));
-	 CREATE TABLE IF NOT EXISTS clients (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name VARCHAR(255), cpf VARCHAR(255), email VARCHAR(255), password VARCHAR(255));
-	 CREATE TABLE IF NOT EXISTS transactions (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, account_origin_id INTEGER, account_destination_id INTEGER, value INTEGER)
-	`
-	_, err = DB.Exec(sqlStmt)
-
-	if err != nil {
-		panic(err)
-	}
+	DB.AutoMigrate(&models.Client{})
+	DB.AutoMigrate(&models.Account{})
+	DB.AutoMigrate(&models.Transaction{})
 
 }
