@@ -10,15 +10,13 @@ import (
 
 func CreateAccount(c *gin.Context) {
 	var account models.Account
-	var client models.Client
 	if err := c.ShouldBindJSON(&account); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := account.Validate(); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+
+	var client models.Client
+	var accountExists models.Account
 
 	result := database.DB.First(&client, account.ClientID)
 
@@ -26,31 +24,35 @@ func CreateAccount(c *gin.Context) {
 		panic(result.Error)
 	}
 
-	var accountClient models.Account
+	database.DB.Where("client_id = ?", account.ClientID).First(&accountExists)
 
-	result = database.DB.Where("client_id = ?", account.ClientID).First(&accountClient)
-
-	if result.Error != nil {
-		panic(result.Error)
-	}
-
-	client.Account = accountClient
-
-	if client.Account.ID != 0 {
+	if accountExists.ID != 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Client already has an account"})
 		return
 	}
 
-	if client.Account.AccountNumber == account.AccountNumber {
+	if accountExists.AccountNumber == account.AccountNumber {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Account number already exists"})
 		return
+	}
+
+	var accounts []models.Account
+
+	database.DB.Find(&accounts)
+
+	for _, rangeAccount := range accounts {
+
+		if rangeAccount.AccountNumber == account.AccountNumber {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Account number already exists"})
+			return
+		}
 	}
 
 	client.Account = account
 
 	database.DB.Save(&client)
 
-	c.JSON(http.StatusCreated, account)
+	c.JSON(http.StatusOK, client)
 
 }
 
