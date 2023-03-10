@@ -10,24 +10,26 @@ import (
 )
 
 func CreateTransaction(c *gin.Context) {
-	idOrigin := c.Params.ByName("id_origin")
-	idDestination := c.Params.ByName("id_destination")
+	numberAccountOrigin := c.Params.ByName("account_origin")
+	numberAccountDestination := c.Params.ByName("account_destination")
 	valueTransaction := c.Params.ByName("value")
 
 	fmt.Println(valueTransaction)
 
 	var accountOrigin models.Account
-	result := database.DB.First(&accountOrigin, idOrigin)
+	result := database.DB.Where("account_number = ?", numberAccountOrigin).First(&accountOrigin)
 
 	if result.Error != nil {
-		panic(result.Error)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "account origin not found"})
+		return
 	}
 
 	var accountDestination models.Account
-	result = database.DB.First(&accountDestination, idDestination)
+	result = database.DB.Where("account_number = ?", numberAccountDestination).First(&accountDestination)
 
 	if result.Error != nil {
-		panic(result.Error)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "account destination not found"})
+		return
 	}
 
 	var transaction models.Transaction
@@ -62,8 +64,9 @@ func CreateTransaction(c *gin.Context) {
 		panic(result.Error)
 	}
 
-	transaction.AccountOriginID = int(accountOrigin.ID)
-	transaction.AccountDestinationId = int(accountDestination.ID)
+	transaction.NumberAccountOrigin = numberAccountOrigin
+	transaction.NumberAccountDestination = numberAccountDestination
+	transaction.AccountID = accountOrigin.ID
 
 	result = database.DB.Create(&transaction)
 

@@ -28,7 +28,7 @@ func SetupRouter() *gin.Engine {
 
 	transactions := r.Group("/transactions")
 	{
-		transactions.POST("/:id_origin/:id_destination", controllers.CreateTransaction)
+		transactions.POST("/:account_origin/:account_destination", controllers.CreateTransaction)
 		transactions.GET("/", controllers.ListTransactions)
 	}
 

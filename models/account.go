@@ -7,11 +7,11 @@ import (
 
 type Account struct {
 	gorm.Model
-	AccountNumber string  `gorm:"type:varchar(100);unique_index" validate:"nonzero"`
-	AgencyNumber  string  `gorm:"type:varchar(100)" validate:"nonzero"`
-	Balance       float64 `gorm:"type:float" validate:"nonzero"`
-	ClientId      uint    `gorm:"type:int"`
-	Client        Client
+	AccountNumber string  `gorm:"type:varchar(100);unique_index" json:"account_number"`
+	AgencyNumber  string  `gorm:"type:varchar(100)" json:"agency_number"`
+	Balance       float64 `gorm:"type:float" json:"balance"`
+	Transactions  []Transaction
+	ClientID      uint
 }
 
 func (a *Account) Validate() error {

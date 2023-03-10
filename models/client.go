@@ -7,10 +7,11 @@ import (
 
 type Client struct {
 	gorm.Model
-	Name     string `gorm:"type:varchar(100)" validate:"nonzero"`
-	CPF      string `gorm:"type:varchar(100);unique_index" validate:"nonzero"`
-	Email    string `gorm:"type:varchar(100);unique_index" validate:"nonzero"`
-	Password string `gorm:"type:varchar(100)" validate:"nonzero"`
+	Name     string `gorm:"type:varchar(100)" validate:"nonzero" json:"name"`
+	CPF      string `gorm:"type:varchar(100);unique_index" validate:"nonzero" json:"cpf"`
+	Email    string `gorm:"type:varchar(100);unique_index" validate:"nonzero" json:"email"`
+	Password string `gorm:"type:varchar(100)" validate:"nonzero" json:"password"`
+	Account  Account
 }
 
 func (c *Client) Validate() error {

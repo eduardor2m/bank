@@ -19,6 +19,16 @@ func CreateClient(c *gin.Context) {
 		return
 	}
 
+	var clientExists models.Client
+
+	userExists := database.DB.Where("cpf = ?", client.CPF).First(&clientExists)
+
+	if userExists.Error == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "CPF already exists"})
+		return
+	}
+	client.Account = models.Account{Balance: 0}
+
 	result := database.DB.Create(&client)
 	if result.Error != nil {
 		panic(result.Error)
@@ -30,7 +40,7 @@ func CreateClient(c *gin.Context) {
 
 func ListClients(c *gin.Context) {
 	var clients []models.Client
-	result := database.DB.Find(&clients)
+	result := database.DB.Model(&clients).Preload("Account").Find(&clients)
 
 	if result.Error != nil {
 		panic(result.Error)

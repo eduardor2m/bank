@@ -10,6 +10,7 @@ import (
 
 func CreateAccount(c *gin.Context) {
 	var account models.Account
+	var client models.Client
 	if err := c.ShouldBindJSON(&account); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -19,10 +20,35 @@ func CreateAccount(c *gin.Context) {
 		return
 	}
 
-	result := database.DB.Create(&account)
+	result := database.DB.First(&client, account.ClientID)
+
 	if result.Error != nil {
 		panic(result.Error)
 	}
+
+	var accountClient models.Account
+
+	result = database.DB.Where("client_id = ?", account.ClientID).First(&accountClient)
+
+	if result.Error != nil {
+		panic(result.Error)
+	}
+
+	client.Account = accountClient
+
+	if client.Account.ID != 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Client already has an account"})
+		return
+	}
+
+	if client.Account.AccountNumber == account.AccountNumber {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Account number already exists"})
+		return
+	}
+
+	client.Account = account
+
+	database.DB.Save(&client)
 
 	c.JSON(http.StatusCreated, account)
 

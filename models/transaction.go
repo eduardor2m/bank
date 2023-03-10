@@ -7,9 +7,10 @@ import (
 
 type Transaction struct {
 	gorm.Model
-	AccountOriginID      int     `gorm:"type:int"`
-	AccountDestinationId int     `gorm:"type:int"`
-	Value                float64 `gorm:"type:float" validate:"nonzero"`
+	NumberAccountOrigin      string  `gorm:"type:varchar(100)" json:"number_account_origin"`
+	NumberAccountDestination string  `gorm:"type:varchar(100)" json:"number_account_destination"`
+	Value                    float64 `gorm:"type:float" validate:"nonzero" json:"value"`
+	AccountID                uint
 }
 
 func (c *Transaction) Validate() error {
